@@ -8,7 +8,7 @@ const login = async (req, res) => {
 		const { email, password } = req.body;
 		const user = await AuthServices.loginUserWithEmailAndPassword(email, password);
 		if (!user) {
-			res.status(400).json({ 
+			res.status(400).json({
 				data: {
 					message: 'Email or password not correct'
 				}
@@ -21,7 +21,7 @@ const login = async (req, res) => {
 			const refresh_token = await TokenService.refreshToken(user);
 			console.log(access_token,refreshToken)
 			res.send(
-			{ 
+			{
 				data:{
 					user, access_token, refresh_token
 				} ,
@@ -35,7 +35,7 @@ const login = async (req, res) => {
 		res.status(500).json({ message: e.message || 'Internal server error'});
 	}
 };
-const resetPassword = async (req, res) => { 
+const resetPassword = async (req, res) => {
 	try {
 		const { email, password } = req.body;
 		const user = await AuthServices.resetPassword(email, password);
@@ -128,11 +128,11 @@ const sendMail = async (req, res) => {
 
 	try {
 		const mailOptions = {
-			emailFrom: "nguyencongtrinhqb@gmail.com",
+			emailFrom: "vanthanhhuynhtk@gmail.com",
 			emailTo: sendEmail.mailTo,
 			subject: "Here is your job link",
 			text: `Click here:${sendEmail.link}`
-			
+
 		};
 		try {
 			await mailService.sendEmail(mailOptions);
@@ -147,7 +147,7 @@ const sendMail = async (req, res) => {
 		console.log(error);
 	}
 }
-const refreshToken = async (req, res) => { 
+const refreshToken = async (req, res) => {
 	try {
 		const token = req.headers.authorization.split(' ').length == 2 ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
 		console.log(token)

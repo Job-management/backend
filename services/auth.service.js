@@ -21,7 +21,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 		}
 	}
 }
-const resetPassword = async (email, password) => { 
+const resetPassword = async (email, password) => {
 	try {
 		const user = await UserController.getUserByEmail(email);
 		if (!user){
@@ -36,7 +36,7 @@ const resetPassword = async (email, password) => {
 		throw new Error(error.message || 'Internal server error');
 	}
 }
-const forgotpassWord = async (email) => { 
+const forgotpassWord = async (email) => {
 	try {
 		const user = await UserController.getUserByEmail(email);
 		if (!user){
@@ -45,7 +45,7 @@ const forgotpassWord = async (email) => {
 		const token = TokenService.forgotpasswordToken(user);
 		console.log(token)
 		const mailOptions = {
-			emailFrom: "nguyencongtrinhqb@gmail.com",
+			emailFrom: "vanthanhhuynhtk@gmail.com",
 			emailTo: email,
 			subject: 'Reset password',
 			text:  `Click this link to reset your password: http://wandertour.ddns.net:5173/resetpassword?token=${token}`,
