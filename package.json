@@ -5,19 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/huynamboz/user-manager.git"
+    "start": "nodemon index.js",
+    "seed": "knex --knexfile=./config/knex/knexfile.js seed:run",
+    "migrate:make": "knex --knexfile=./config/knex/knexfile.js migrate:make",
+    "migrate:up": "knex --knexfile=./config/knex/knexfile.js migrate:up",
+    "migrate:down": "knex --knexfile=./config/knex/knexfile.js migrate:down"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/huynamboz/user-manager/issues"
-  },
-  "homepage": "https://github.com/huynamboz/user-manager#readme",
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
     "acl": "^0.4.11",

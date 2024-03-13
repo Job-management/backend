@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log(process.env.PASSWORD)
 module.exports = {
 	development: {
 		client: 'mysql2',
@@ -10,10 +11,10 @@ module.exports = {
 			port: process.env.PORT
 		},
 		migrations: {
-			directory: './database/migrations'
+			directory: '../../database/migrations'
 		},
 		seeds: {
-			directory: './database/seeds'
+			directory: '../../database/seeds'
 		}
 	}
 };
