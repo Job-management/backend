@@ -1,10 +1,11 @@
 const knex = require("knex");
 const config = require("../config/knex/knexfile");
+const catchAsync = require("../utils/catchAsync");
 
-const environment = process.env.NODE_ENV || "development";
-const db = knex(config[environment]);
+const database = require('../database')
+const db = database.getDB()
 
-const getDataCrawl = async () => {
+const getDataCrawl = catchAsync(async () => {
   return await db("job_data").select(
     "job_data.id",
     "job_data.Title",
@@ -28,19 +29,23 @@ const getDataCrawl = async () => {
     "job_data.Deadline",
     "job_data.Source_Picture"
   );
-};
+});
+
 const getDataCrawlById = async (id) => {
   return await db("job_data").where({ id }).first();
 };
+
 const updateJob = (id, updatedJob) => {
   return db("job_data").where({ id }).update(updatedJob);
 };
+
 const getJobByTitle = async () => {
   return await db("job_data")
     .distinct("job_data.job")
     .select("job_data.job")
     .limit(10);
 };
+
 const filterJob = async (key1, key2, key3) => {
   let cityKeyword = key3.toLowerCase();
 
