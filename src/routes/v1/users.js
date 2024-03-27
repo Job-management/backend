@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const userController = require('../controllers/user.Controller');
-const AuthMiddleware = require('../middlewares/auth.middleware');
-const TokenService = require('../services/token.service');
+const userController = require('../../controllers/user.Controller');
+const AuthMiddleware = require('../../middlewares/auth.middleware');
+const TokenService = require('../../services/token.service');
 const bodyParser = require('body-parser')
 router.use(bodyParser.json())
 // Lấy danh sách người dùng
@@ -69,7 +69,7 @@ router.put('/me', async (req, res) => {
 		if (user) {
 			await userController.updateUser(user_id, updatedUser);
 			const user = await userController.getUserById(user_id);
-			res.json({ 
+			res.json({
 				message: 'User updated',
 				data: user
 			 });

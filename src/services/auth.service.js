@@ -1,6 +1,6 @@
 const TokenService = require('./token.service');
 const UserController = require('../controllers/user.Controller');
-const mailService  = require('../services/mailService');
+const mailService  = require('./mailService');
 const dotenv = require('dotenv');
 dotenv.config();
 const { generateUUID } = require('../utils/uuid');
