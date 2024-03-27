@@ -1,39 +1,25 @@
-const knex = require("knex");
-const config = require("../config/knex/knexfile");
+const CrawlDataService = require("../services/CrawlData.service");
 const catchAsync = require("../utils/catchAsync");
+const { success } = require("../utils/ApiResponse");
+const ApiError = require("../utils/ApiError");
+const database = require("../database");
+const httpStatus = require("http-status");
+const db = database.getDB();
 
-const database = require('../database')
-const db = database.getDB()
-
-const getDataCrawl = catchAsync(async () => {
-  return await db("job_data").select(
-    "job_data.id",
-    "job_data.Title",
-    "job_data.Company_Name",
-    "job_data.Time",
-    "job_data.City",
-    "job_data.Age",
-    "job_data.Sexual",
-    "job_data.Probation_Time",
-    "job_data.Work_Way",
-    "job_data.Job",
-    "job_data.Place",
-    "job_data.Right",
-    "job_data.Number_Employee",
-    "job_data.Experience",
-    "job_data.Level",
-    "job_data.Salary",
-    "job_data.Education",
-    "job_data.Description",
-    "job_data.Requirement",
-    "job_data.Deadline",
-    "job_data.Source_Picture"
-  );
+const getDataCrawls = catchAsync(async (req, res) => {
+  const data = await CrawlDataService.getDataCrawls();
+  res.status(httpStatus.OK).send(success("SUCCESS", data, httpStatus.OK));
 });
 
-const getDataCrawlById = async (id) => {
-  return await db("job_data").where({ id }).first();
-};
+const getDataCrawlById = catchAsync(async (req, res) => {
+  const id = req.params.id;
+  const data = await CrawlDataService.getDataCrawlById(id);
+  if (!data) {
+    throw new ApiError(httpStatus.NOT_FOUND, "Crawl data not found");
+  }
+
+  res.status(httpStatus.OK).send(success("SUCCESS", data, httpStatus.OK));
+});
 
 const updateJob = (id, updatedJob) => {
   return db("job_data").where({ id }).update(updatedJob);
@@ -72,7 +58,7 @@ const filterJob = async (key1, key2, key3) => {
 };
 
 module.exports = {
-  getDataCrawl,
+  getDataCrawls,
   getDataCrawlById,
   updateJob,
   getJobByTitle,

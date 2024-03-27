@@ -30,6 +30,7 @@
     "googleapis": "^105.0.0",
     "gs": "^0.0.2",
     "http-status": "^1.7.4",
+    "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.0",
     "knex": "^2.4.2",
     "mysql2": "^3.3.3",
