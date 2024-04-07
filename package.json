@@ -6,12 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=development nodemon ./src/index.js",
-    "seed": "knex --knexfile=./config/knex/knexfile.js seed:run",
-    "seed:make": "knex --knexfile=./config/knex/knexfile.js seed:make",
-    "migrate:all": "knex --knexfile=./config/knex/knexfile.js migrate:latest",
-    "migrate:make": "knex --knexfile=./config/knex/knexfile.js migrate:make",
-    "migrate:up": "knex --knexfile=./config/knex/knexfile.js migrate:up",
-    "migrate:down": "knex --knexfile=./config/knex/knexfile.js migrate:down"
+    "seed": "knex --knexfile=./src/config/knex/knexfile.js seed:run",
+    "seed:make": "knex --knexfile=./src/config/knex/knexfile.js seed:make",
+    "migrate:all": "knex --knexfile=./src/config/knex/knexfile.js migrate:latest",
+    "migrate:make": "knex --knexfile=./src/config/knex/knexfile.js migrate:make",
+    "migrate:up": "knex --knexfile=./src/config/knex/knexfile.js migrate:up",
+    "migrate:down": "knex --knexfile=./src/config/knex/knexfile.js migrate:down"
   },
   "keywords": [],
   "author": "",
