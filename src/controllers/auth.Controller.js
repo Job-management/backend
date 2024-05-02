@@ -50,7 +50,7 @@ const resetPassword = async (req, res) => {
 	}
 
 }
-const forgotpassWord = async (req, res) => {
+const forgotPassWord = async (req, res) => {
 	try {
 		const { email } = req.body;
 		const user = await AuthServices.forgotpassWord(email);
@@ -172,6 +172,6 @@ module.exports = {
 	deleteUser,
 	sendMail,
 	refreshToken,
-	forgotpassWord,
+	forgotPassWord,
 	resetPassword
 }
