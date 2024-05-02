@@ -7,7 +7,16 @@ const httpStatus = require("http-status");
 const db = database.getDB();
 
 const getDataCrawls = catchAsync(async (req, res) => {
-  const data = await CrawlDataService.getDataCrawls();
+  const rawData = await CrawlDataService.getDataCrawls();
+  const data = rawData.map((item, index) => {
+    console.log(item);
+    return {
+      ...item,
+      images: item.images && item.images !== 'None' ? JSON.parse(
+        item.images.replace(/'(?=([^"]*"[^"]*")*[^"]*$)/g, '"')
+      ) : null,
+    };
+  });
   res.status(httpStatus.OK).send(success("SUCCESS", data, httpStatus.OK));
 });
 

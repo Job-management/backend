@@ -12,8 +12,8 @@ router.put('/:id',AuthController.updateUserInfo)
 router.delete('/:id',AuthController.deleteUser)
 router.post('/sendmail',AuthController.sendMail)
 router.get('/refresh',AuthController.refreshToken)
-router.post('/forgotpassword',AuthController.forgotpassWord)
-router.post('/resetpassword',AuthController.resetPassword)
+router.post('/forgot-password',AuthController.forgotPassWord)
+router.post('/reset-password',AuthController.resetPassword)
 
 
 
