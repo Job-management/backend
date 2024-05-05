@@ -47,6 +47,8 @@ exports.up = function (knex) {
         .enum("type", ["facebook", "linkedin", "topdev", "itviec"])
         .notNullable();
       table.specificType("contact", "MEDIUMTEXT");
+      table.timestamp("created_at").defaultTo(knex.fn.now());
+      table.timestamp("updated_at").defaultTo(knex.fn.now());
     });
 };
 
