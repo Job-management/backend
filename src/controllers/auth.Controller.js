@@ -149,12 +149,12 @@ const sendMail = async (req, res) => {
 }
 const refreshToken = async (req, res) => {
 	try {
-		const token = req.headers.authorization.split(' ').length == 2 ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
+		const token = req.body.refresh_token;
 		console.log(token)
 	if (token) {
 		const response = await TokenService.refreshTokenService(token)
 		return res.status(201).json({
-			newToken: response
+			access_token: response
 		});
 	} else {
 		return res.status(400).json({ message: 'The refresh token is not valid' });
