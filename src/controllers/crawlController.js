@@ -13,7 +13,7 @@ const getDataCrawls = catchAsync(async (req, res) => {
     return {
       ...item,
       images: item.images && item.images !== 'None' ? JSON.parse(
-        item.images.replace(/'(?=([^"]*"[^"]*")*[^"]*$)/g, '"')
+        item.images.replaceAll('None', null).replaceAll("'", '"')
       ) : null,
     };
   });
@@ -23,6 +23,9 @@ const getDataCrawls = catchAsync(async (req, res) => {
 const getDataCrawlById = catchAsync(async (req, res) => {
   const id = req.params.id;
   const data = await CrawlDataService.getDataCrawlById(id);
+  data.images = data.images && data.images !== 'None' ? JSON.parse(
+    data.images.replaceAll('None', null).replaceAll("'", '"')
+  ) : null;
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, "Crawl data not found");
   }
