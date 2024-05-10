@@ -1,8 +1,8 @@
 const database = require("../database");
 const db = database.getDB();
 
-const getDataCrawls = async () => {
-  return await db("crawl_data")
+const getDataCrawls = async (startIndex, limit, params) => {
+  let query = db("crawl_data")
     .select(
       "crawl_data.id",
       "crawl_data.title",
@@ -27,10 +27,36 @@ const getDataCrawls = async () => {
       "crawl_data.images",
       "crawl_data.link",
       "crawl_data.type",
-      "crawl_data.contact"
+      "crawl_data.contact",
+      "crawl_data.major_category_id"
     )
-    .orderBy("crawl_data.time", "desc");
+    .where(function() {
+      this.where("crawl_data.title", "like", `%${params.txt_search}%`)
+          .orWhere("crawl_data.job", "like", `%${params.txt_search}%`)
+          .orWhere("crawl_data.description", "like", `%${params.txt_search}%`)
+          .orWhere("crawl_data.education", "like", `%${params.txt_search}%`)
+          .orWhere("crawl_data.experience", "like", `%${params.txt_search}%`)
+          .orWhere("crawl_data.place", "like", `%${params.txt_search}%`);
+    })
+
+    if (params.major_category_id !== 'None') {
+      query = query.where("crawl_data.major_category_id", params.major_category_id)
+    }
+
+    if (params.city !== 'None') {
+      query = query.where("crawl_data.city", params.city)
+    }
+
+    const totalCountQuery = await db("crawl_data").count("crawl_data.id as total");
+    const total = totalCountQuery[0].total;
+  
+    query = query.offset(startIndex).limit(limit);
+  
+    const result = await query.orderBy("crawl_data.time", "desc");
+    
+    return { total, result };
 };
+
 
 const getDataCrawlById = async (id) => {
   return await db("crawl_data").where({ id }).first();
