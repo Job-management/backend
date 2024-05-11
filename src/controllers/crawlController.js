@@ -1,15 +1,35 @@
 const CrawlDataService = require("../services/CrawlData.service");
 const catchAsync = require("../utils/catchAsync");
-const { success } = require("../utils/ApiResponse");
+const { success, successPanigation } = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const database = require("../database");
 const httpStatus = require("http-status");
 const db = database.getDB();
 
 const getDataCrawls = catchAsync(async (req, res) => {
-  const rawData = await CrawlDataService.getDataCrawls();
-  const data = rawData.map((item, index) => {
-    console.log(item);
+  const page = Number.parseInt(req.query.page)
+  const limit = Number.parseInt(req.query.limit)
+  if (
+    Number.isNaN(page) ||
+    page < 1 ||
+    Number.isNaN(limit) ||
+    limit < 0
+  ) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid query parameters!");
+  }
+
+  const startIndex = (page - 1) * limit
+
+  const params = {
+    txt_search: req.query.txt_search
+    ? req.query.txt_search.trim()
+    : '',
+    major_category_id: req.query.major_category_id ? Number.parseInt(req.query.major_category_id) : 'None',
+    city: req.query.city ? req.query.city : 'None'
+  }
+
+  const rawData = await CrawlDataService.getDataCrawls(startIndex, limit, params);
+  const data = rawData.result.map((item, index) => {
     return {
       ...item,
       images: item.images && item.images !== 'None' ? JSON.parse(
@@ -17,7 +37,7 @@ const getDataCrawls = catchAsync(async (req, res) => {
       ) : null,
     };
   });
-  res.status(httpStatus.OK).send(success("SUCCESS", data, httpStatus.OK));
+  res.status(httpStatus.OK).send(successPanigation("SUCCESS", data, httpStatus.OK, rawData.total, page, limit));
 });
 
 const getDataCrawlById = catchAsync(async (req, res) => {

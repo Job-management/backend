@@ -13,3 +13,16 @@ exports.success = (message, data, statusCode) => {
     data
   };
 };
+
+exports.successPanigation = (message, data, statusCode, totalSize, page, limit) => {
+  return {
+    message,
+    error: false,
+    code: statusCode,
+    data,
+    page,
+    limit,
+    totalSize: totalSize
+  };
+};
+
