@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const CrawlController = require("../../controllers/crawlController");
-const bodyParser = require("body-parser");
-router.use(bodyParser.json());
+// const bodyParser = require("body-parser");
+// router.use(bodyParser.json());
 
 router.get("/", CrawlController.getDataCrawls);
 

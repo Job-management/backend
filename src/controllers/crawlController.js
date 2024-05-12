@@ -7,45 +7,66 @@ const httpStatus = require("http-status");
 const db = database.getDB();
 
 const getDataCrawls = catchAsync(async (req, res) => {
-  const page = Number.parseInt(req.query.page)
-  const limit = Number.parseInt(req.query.limit)
-  if (
-    Number.isNaN(page) ||
-    page < 1 ||
-    Number.isNaN(limit) ||
-    limit < 0
-  ) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid query parameters!");
+  const page = Number.parseInt(req.query.page) || 1;
+  const limit = Number.parseInt(req.query.limit) || 20;
+  if (Number.isNaN(page) || page < 1 || Number.isNaN(limit) || limit < 0) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Invalid query parameters!");
   }
 
-  const startIndex = (page - 1) * limit
+  const startIndex = (page - 1) * limit;
 
   const params = {
-    txt_search: req.query.txt_search
-    ? req.query.txt_search.trim()
-    : '',
-    major_category_id: req.query.major_category_id ? Number.parseInt(req.query.major_category_id) : 'None',
-    city: req.query.city ? req.query.city : 'None'
-  }
+    txt_search: req.query.txt_search ? req.query.txt_search.trim() : "",
+    major_category_id: req.query.major_category_id
+      ? Number.parseInt(req.query.major_category_id)
+      : "None",
+    city: req.query.city ? req.query.city : "None",
+  };
 
-  const rawData = await CrawlDataService.getDataCrawls(startIndex, limit, params);
+  const rawData = await CrawlDataService.getDataCrawls(
+    startIndex,
+    limit,
+    params
+  );
   const data = rawData.result.map((item, index) => {
+    const _images =
+      item.images && item.images !== "None"
+        ? JSON.parse(item.images.replaceAll("None", null).replaceAll("'", '"'))
+        : null;
+    const images = Array.isArray(_images)
+      ? _images.map((item) => {
+          return {
+            ...item,
+            src: item.link || item.src,
+          };
+        })
+      : null;
     return {
       ...item,
-      images: item.images && item.images !== 'None' ? JSON.parse(
-        item.images.replaceAll('None', null).replaceAll("'", '"')
-      ) : null,
+      images,
     };
   });
-  res.status(httpStatus.OK).send(successPanigation("SUCCESS", data, httpStatus.OK, rawData.total, page, limit));
+  res
+    .status(httpStatus.OK)
+    .send(
+      successPanigation(
+        "SUCCESS",
+        data,
+        httpStatus.OK,
+        rawData.total,
+        page,
+        limit
+      )
+    );
 });
 
 const getDataCrawlById = catchAsync(async (req, res) => {
   const id = req.params.id;
   const data = await CrawlDataService.getDataCrawlById(id);
-  data.images = data.images && data.images !== 'None' ? JSON.parse(
-    data.images.replaceAll('None', null).replaceAll("'", '"')
-  ) : null;
+  data.images =
+    data.images && data.images !== "None"
+      ? JSON.parse(data.images.replaceAll("None", null).replaceAll("'", '"'))
+      : null;
   if (!data) {
     throw new ApiError(httpStatus.NOT_FOUND, "Crawl data not found");
   }
@@ -88,6 +109,15 @@ const filterJob = async (key1, key2, key3) => {
     ]
   );
 };
+
+const searchJob = async (search) => {
+  return await db("job_data").whereRaw(
+    "LOWER(title) like ?  OR LOWER(job) like",
+    [`%${search}%`, `%${search}%`]
+  );
+};
+
+const queryJob = async ({ search, major, city }) => {};
 
 module.exports = {
   getDataCrawls,
