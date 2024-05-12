@@ -30,7 +30,7 @@ const login = catchAsync(async (req, res) => {
   const refresh_token = await TokenService.refreshToken(user);
   res.send({
     data: {
-      user,
+      user: { ...user, avatar: JSON.parse(user.avatar) },
       access_token,
       refresh_token,
     },
