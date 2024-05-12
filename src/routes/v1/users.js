@@ -3,8 +3,14 @@ const router = express.Router();
 const userController = require('../../controllers/user.Controller');
 const AuthMiddleware = require('../../middlewares/auth.middleware');
 const TokenService = require('../../services/token.service');
-const bodyParser = require('body-parser')
-router.use(bodyParser.json())
+// const bodyParser = require('body-parser')
+
+// router.use(bodyParser.json());
+// // parse json request body
+// router.use(express.json({ limit: '50mb' }));
+// // parse urlencoded request body
+// router.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // Lấy danh sách người dùng
 router.get('/', async (req, res) => {
 	try {

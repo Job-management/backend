@@ -6,7 +6,6 @@ dotenv.config();
 const { generateUUID } = require('../utils/uuid');
 const loginUserWithEmailAndPassword = async (email, password) => {
 	const user = await UserController.getUserByEmail(email);
-	console.log("userDB",user)
 	if (!user){
 		return null;
 	}
@@ -17,7 +16,8 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 			email : user.email,
 			name : user.name,
 			avatar: user.avatar,
-			role: user.role
+			role: user.role,
+			isVerified: user.isVerified
 		}
 	}
 }
@@ -64,8 +64,6 @@ const register = async ( user ) => {
 		const hashedPassword = TokenService.hashPasswordWithSalt(user.password, process.env.SALT );
 		user.password = hashedPassword.password;
 		user.id = generateUUID();
-		user.role = 'user';
-		console.log(user)
 		await UserController.createUser(user);
 		return user;
 	} catch (error) {
