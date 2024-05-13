@@ -31,12 +31,12 @@ const getDataCrawls = async (startIndex, limit, params) => {
       "crawl_data.major_category_id"
     )
     .where(function() {
-      this.where("crawl_data.title", "like", `%${params.txt_search}%`)
-          .orWhere("crawl_data.job", "like", `%${params.txt_search}%`)
-          .orWhere("crawl_data.description", "like", `%${params.txt_search}%`)
-          .orWhere("crawl_data.education", "like", `%${params.txt_search}%`)
-          .orWhere("crawl_data.experience", "like", `%${params.txt_search}%`)
-          .orWhere("crawl_data.place", "like", `%${params.txt_search}%`);
+      this.where("crawl_data.title", "like", `%${params.search}%`)
+          .orWhere("crawl_data.job", "like", `%${params.search}%`)
+          .orWhere("crawl_data.description", "like", `%${params.search}%`)
+          .orWhere("crawl_data.education", "like", `%${params.search}%`)
+          .orWhere("crawl_data.experience", "like", `%${params.search}%`)
+          .orWhere("crawl_data.place", "like", `%${params.search}%`);
     })
 
     if (params.major_category_id !== 'None') {
@@ -49,11 +49,11 @@ const getDataCrawls = async (startIndex, limit, params) => {
 
     const totalCountQuery = await db("crawl_data").count("crawl_data.id as total");
     const total = totalCountQuery[0].total;
-  
+
     query = query.offset(startIndex).limit(limit);
-  
+
     const result = await query.orderBy("crawl_data.time", "desc");
-    
+
     return { total, result };
 };
 

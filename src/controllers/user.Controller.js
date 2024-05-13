@@ -5,15 +5,32 @@ const environment = process.env.NODE_ENV || "development";
 const db = knex(config[environment]);
 // Lấy danh sách người dùng
 const getUsers = async () => {
-  return await db("users").select(
-    "users.id",
-    "users.name",
-    "users.email",
-    "users.avatar",
-    "users.role",
-    "users.created_at",
-    "users.updated_at"
-  );
+  return await db("users")
+    .select(
+      "users.id",
+      "users.name",
+      "users.email",
+      "users.avatar",
+      "users.role",
+      "users.isVerified",
+      "users.created_at",
+      "users.updated_at"
+    )
+    .where({ role: "user" });
+};
+const getCompanies = async () => {
+  return await db("users")
+    .select(
+      "users.id",
+      "users.name",
+      "users.email",
+      "users.avatar",
+      "users.role",
+      "users.isVerified",
+      "users.created_at",
+      "users.updated_at"
+    )
+    .where({ role: "company" });
 };
 const getUserByEmail = (email) => {
   return db("users").where({ email }).first();
@@ -66,4 +83,5 @@ module.exports = {
   deleteUser,
   getUserByEmail,
   getUserPolls,
+  getCompanies,
 };

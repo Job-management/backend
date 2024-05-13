@@ -16,7 +16,7 @@ const getDataCrawls = catchAsync(async (req, res) => {
   const startIndex = (page - 1) * limit;
 
   const params = {
-    txt_search: req.query.txt_search ? req.query.txt_search.trim() : "",
+    search: req.query.search ? req.query.search.trim() : "",
     major_category_id: req.query.major_category_id
       ? Number.parseInt(req.query.major_category_id)
       : "None",
