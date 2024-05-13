@@ -24,6 +24,18 @@ router.get("/", async (req, res) => {
     res.status(500).json({ error: "Internal server error1" });
   }
 });
+router.get("/company", async (req, res) => {
+  try {
+    const users = await userController.getCompanies();
+    const _user = users.map((user) => {
+      return { ...user, avatar: JSON.parse(user.avatar) };
+    });
+    res.status(200).json(_user);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error1" });
+  }
+});
 router.get("/me", [AuthMiddleware.authorize], async (req, res) => {
   try {
     const user_id = TokenService.getInfoFromToken(req).id;

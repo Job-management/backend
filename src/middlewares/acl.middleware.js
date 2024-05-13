@@ -14,6 +14,16 @@ aclInstance.allow([
 		],
 	},
 	{
+		roles: 'company',
+		allows: [
+			{ resources: '/users', permissions: '*' },
+			{ resources: '/users/:id', permissions: '*' },
+			{ resources: '/me', permissions: '*'},
+			{ resources: '/', permissions: '*' },
+
+		],
+	},
+	{
 		roles: 'user',
 		allows: [
 			{ resources: '/me', permissions: ['get', 'post', 'put'] },
