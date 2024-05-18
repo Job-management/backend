@@ -39,14 +39,33 @@ const getDataCrawls = async (startIndex, limit, params) => {
           .orWhere("crawl_data.place", "like", `%${params.search}%`);
     })
 
+    // Handle major category
     if (params.major_category_id !== 'None') {
       query = query.where("crawl_data.major_category_id", params.major_category_id)
     }
 
-    if (params.city !== 'None') {
-      query = query.where("crawl_data.city", params.city)
+    // Handle address
+    if (params.address !== 'None') {
+      query = query.where("crawl_data.city", params.address)
     }
 
+    // Handle salary 
+    if (params.salary_from !== 'None' && params.salary_to !== 'None') {
+      query = query.whereRaw(
+        'CAST(crawl_data.salary AS DECIMAL(10, 2)) BETWEEN ? AND ?',
+        [params.salary_from, params.salary_to]
+      );
+    }
+
+    if (params.salary_from !== 'None' && params.salary_to == 'None')
+    {
+      query = query.whereRaw(
+        'CAST(crawl_data.salary AS DECIMAL(10, 2)) <= ?',
+        [params.salary_from]
+      );
+    }
+
+    // Get total count
     const totalCountQuery = await db("crawl_data").count("crawl_data.id as total");
     const total = totalCountQuery[0].total;
 

@@ -9,18 +9,32 @@ const db = database.getDB();
 const getDataCrawls = catchAsync(async (req, res) => {
   const page = Number.parseInt(req.query.page) || 1;
   const limit = Number.parseInt(req.query.limit) || 20;
+
   if (Number.isNaN(page) || page < 1 || Number.isNaN(limit) || limit < 0) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid query parameters!");
   }
 
+  // Initialize salary_from and salary_to
+  let salary_from = "None";
+  let salary_to = "None";
+
+  // Check if salary query parameter is present
+  if (req.query.salary) {
+    [salary_from, salary_to] = req.query.salary.split("-");
+  }
+
+  // Calculate start index for pagination
   const startIndex = (page - 1) * limit;
 
+  // Parameters object
   const params = {
     search: req.query.search ? req.query.search.trim() : "",
     major_category_id: req.query.major_category_id
       ? Number.parseInt(req.query.major_category_id)
       : "None",
-    city: req.query.city ? req.query.city : "None",
+    address: req.query.address ? req.query.address : "None",
+    salary_from: salary_from ? Number.parseFloat(salary_from) : 'None', 
+    salary_to: salary_to ? Number.parseFloat(salary_to) : 'None'
   };
 
   const rawData = await CrawlDataService.getDataCrawls(
