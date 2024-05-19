@@ -14,7 +14,7 @@ exports.success = (message, data, statusCode) => {
   };
 };
 
-exports.successPanigation = (message, data, statusCode, totalSize, page, limit) => {
+exports.successPagination = (message, data, statusCode, totalSize, page, limit) => {
   return {
     message,
     error: false,

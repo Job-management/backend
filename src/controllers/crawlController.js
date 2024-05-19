@@ -1,6 +1,6 @@
 const CrawlDataService = require("../services/CrawlData.service");
 const catchAsync = require("../utils/catchAsync");
-const { success, successPanigation } = require("../utils/ApiResponse");
+const { success, successPagination } = require("../utils/ApiResponse");
 const ApiError = require("../utils/ApiError");
 const database = require("../database");
 const httpStatus = require("http-status");
@@ -15,8 +15,8 @@ const getDataCrawls = catchAsync(async (req, res) => {
   }
 
   // Initialize salary_from and salary_to
-  let salary_from = "None";
-  let salary_to = "None";
+  let salary_from = null;
+  let salary_to = null;
 
   // Check if salary query parameter is present
   if (req.query.salary) {
@@ -33,7 +33,7 @@ const getDataCrawls = catchAsync(async (req, res) => {
       ? Number.parseInt(req.query.major_category_id)
       : "None",
     address: req.query.address ? req.query.address : "None",
-    salary_from: salary_from ? Number.parseFloat(salary_from) : 'None', 
+    salary_from: salary_from ? Number.parseFloat(salary_from) : 'None',
     salary_to: salary_to ? Number.parseFloat(salary_to) : 'None'
   };
 
@@ -63,7 +63,7 @@ const getDataCrawls = catchAsync(async (req, res) => {
   res
     .status(httpStatus.OK)
     .send(
-      successPanigation(
+      successPagination(
         "SUCCESS",
         data,
         httpStatus.OK,
