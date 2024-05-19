@@ -36,8 +36,10 @@ const getDataCrawls = async (startIndex, limit, params) => {
           .orWhere("crawl_data.description", "like", `%${params.search}%`)
           .orWhere("crawl_data.education", "like", `%${params.search}%`)
           .orWhere("crawl_data.experience", "like", `%${params.search}%`)
-          .orWhere("crawl_data.place", "like", `%${params.search}%`);
+          .orWhere("crawl_data.place", "like", `%${params.search}%`)
+          .andWhere("crawl_data.time", "!=", "None");
     })
+    .orderBy('crawl_data.time', 'desc');
 
     // Handle major category
     if (params.major_category_id !== 'None') {
@@ -49,7 +51,7 @@ const getDataCrawls = async (startIndex, limit, params) => {
       query = query.where("crawl_data.city", params.address)
     }
 
-    // Handle salary 
+    // Handle salary
     if (params.salary_from !== 'None' && params.salary_to !== 'None') {
       query = query.whereRaw(
         'CAST(crawl_data.salary AS DECIMAL(10, 2)) BETWEEN ? AND ?',
