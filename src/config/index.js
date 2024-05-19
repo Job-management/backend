@@ -16,6 +16,8 @@ const config = {
   SECRET: process.env.SECRET,
   APP_NAME: process.env.APP_NAME,
   SMTP_MAIL: process.env.SMTP_MAIL,
+  MAIL_OWNER: process.env.MAIL_OWNER,
+  MAIL_TEST: process.env.MAIL_TEST
 };
 
 module.exports = config;
