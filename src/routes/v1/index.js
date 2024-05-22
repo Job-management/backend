@@ -1,6 +1,7 @@
 const dataCrawlRouter = require("./dataCrawl");
 const authRouter = require("./auth");
-const userRouter = require("./users")
+const userRouter = require("./users");
+const mailScheduleRouter = require("./mailSchedule.route")
 const express = require("express");
 
 const router = express.Router();
@@ -17,6 +18,10 @@ const defaultRoutes = [
   {
     path: "/user",
     route: userRouter,
+  },
+  {
+    path: "/mail-schedule",
+    route: mailScheduleRouter,
   }
 ];
 
