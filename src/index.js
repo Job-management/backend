@@ -10,6 +10,7 @@ const app = express();
 const cloudinary = require("cloudinary");
 const bodyParser = require("body-parser");
 const config = require("./config");
+const cronJob = require("./schedule")
 
 app.use(bodyParser.json());
 // parse json request body
@@ -32,6 +33,9 @@ app.use("/whoami", (req, res) => {
 
 // v1 api routes
 app.use("/api/v1", routes);
+
+// start cronJob sendMail
+cronJob.start();
 
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, "Not found"));

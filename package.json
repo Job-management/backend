@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=development nodemon ./src/index.js",
+    "start": "nodemon ./src/index.js",
     "seed": "knex --knexfile=./src/config/knex/knexfile.js seed:run",
     "seed:make": "knex --knexfile=./src/config/knex/knexfile.js seed:make",
     "migrate:all": "knex --knexfile=./src/config/knex/knexfile.js migrate:latest",
@@ -36,6 +36,7 @@
     "knex": "^2.4.2",
     "multer": "^1.4.5-lts.1",
     "mysql2": "^3.3.3",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.7",
     "pg": "^8.11.0",
     "qrcode": "^1.5.3",
