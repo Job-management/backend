@@ -67,13 +67,12 @@ const getDataCrawls = async (startIndex, limit, params) => {
       );
     }
 
-    // Get total count
-    const totalCountQuery = await db("crawl_data").count("crawl_data.id as total");
-    const total = totalCountQuery[0].total;
-
     query = query.offset(startIndex).limit(limit);
 
     const result = await query.orderBy("crawl_data.time", "desc");
+
+    // Get total count
+    const total = result ? result.length : 0;
 
     return { total, result };
 };

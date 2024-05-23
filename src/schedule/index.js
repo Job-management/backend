@@ -1,5 +1,6 @@
 const cron = require("node-cron");
 const mailService = require("../services/mailService");
+const mailScheduleService = require("../services/mailSchedule.service")
 const config = require("../config");
 
 const sendMail = async () => {
@@ -11,8 +12,13 @@ const sendMail = async () => {
         text: `Click here: https://blog.greenroots.info/send-and-schedule-e-mails-from-a-nodejs-app`,
       };
       try {
-        await mailService.sendEmail(mailOptions);
-        console.log("Email sent successfully");
+        const listMailSchedule = await mailScheduleService.getAllMailSchedule();
+        for (const oItem of listMailSchedule) {
+          mailOptions.emailTo = oItem.email
+          await mailService.sendEmail(mailOptions);
+          console.log("Email sent successfully");
+        }
+       
       } catch (error) {
         console.log("Failed to send email" || "Internal server error");
       }
