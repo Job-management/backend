@@ -3,6 +3,8 @@ const router = express.Router();
 const userController = require("../../controllers/user.Controller");
 const AuthMiddleware = require("../../middlewares/auth.middleware");
 const TokenService = require("../../services/token.service");
+const { authentication } = require("../../middlewares/auth.middleware");
+
 // const bodyParser = require('body-parser')
 
 // router.use(bodyParser.json());
@@ -58,6 +60,7 @@ router.get("/:id", async (req, res) => {
   try {
     const user = await userController.getUserById(userId);
     if (user) {
+      user.avatar = JSON.parse(user.avatar);
       res.json(user);
     } else {
       res.status(404).json({ error: "User not found" });
@@ -82,7 +85,7 @@ router.post("/", async (req, res) => {
 });
 
 // Cập nhật thông tin người dùng
-router.put("/me", async (req, res) => {
+router.put("/me", authentication, async (req, res) => {
   const updatedUser = req.body;
   try {
     const user_id = TokenService.getInfoFromToken(req).id;
@@ -93,6 +96,7 @@ router.put("/me", async (req, res) => {
         avatar: JSON.stringify(updatedUser.avatar),
       });
       const user = await userController.getUserById(user_id);
+      user.avatar = JSON.parse(user.avatar);
       res.json({
         message: "User updated",
         data: user,

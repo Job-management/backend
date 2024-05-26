@@ -39,13 +39,13 @@ const login = catchAsync(async (req, res) => {
 });
 const resetPassword = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await AuthServices.resetPassword(email, password);
+    const { currentPassword, password } = req.body;
+    const user = await AuthServices.resetPassword(req.user.id, currentPassword, password);
     if (!user) {
-      res.status(400).json({ message: "Email not found" });
+      res.status(400).json({ message: "Change password failure, please check your current password" });
       return;
     }
-    res.status(200).json({ message: "Reset password success" });
+    res.status(200).json({ message: "Change password success" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: error.message || "Internal server error" });
