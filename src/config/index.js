@@ -17,7 +17,10 @@ const config = {
   APP_NAME: process.env.APP_NAME,
   SMTP_MAIL: process.env.SMTP_MAIL,
   MAIL_OWNER: process.env.MAIL_OWNER,
-  MAIL_TEST: process.env.MAIL_TEST
+  MAIL_TEST: process.env.MAIL_TEST,
+  MYSQL_HOST: process.env.MYSQL_HOST,
+  MYSQL_USER: process.env.MYSQL_USER,
+  MYSQL_PASSWORD: process.env.MYSQL_PASSWORD,
 };
 
 module.exports = config;

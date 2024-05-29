@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require("../../controllers/user.Controller");
 const AuthMiddleware = require("../../middlewares/auth.middleware");
 const TokenService = require("../../services/token.service");
+const CrawlDataService = require("../../services/crawlData.service");
 const { authentication } = require("../../middlewares/auth.middleware");
 
 // const bodyParser = require('body-parser')
@@ -54,19 +55,17 @@ router.get("/me", [AuthMiddleware.authorize], async (req, res) => {
   }
 });
 
-// Lấy thông tin người dùng theo ID
-router.get("/:id", async (req, res) => {
-  const userId = req.params.id;
+router.get("/skill", authentication, async (req, res) => {
   try {
-    const user = await userController.getUserById(userId);
-    if (user) {
-      user.avatar = JSON.parse(user.avatar);
-      res.json(user);
-    } else {
-      res.status(404).json({ error: "User not found" });
+    const userSkill = await userController.getUserSkillByUserId(req.user.id);
+    console.log(userSkill);
+    if (!userSkill) {
+      return res.status(200).json({});
     }
-  } catch (err) {
-    console.error(err);
+    userSkill.skill = JSON.parse(userSkill.skill);
+    return res.status(200).json(userSkill);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -101,6 +100,107 @@ router.put("/me", authentication, async (req, res) => {
         message: "User updated",
         data: user,
       });
+    } else {
+      res.status(404).json({ error: "User not found" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.put("/skill", authentication, async (req, res) => {
+  try {
+    const dataUpdate = {
+      ...req.body,
+      major_category_id: req.body.major,
+      skill: JSON.stringify(req.body.skill),
+    };
+    delete dataUpdate.major;
+    const userSkillGet = await userController.getUserSkillByUserId(req.user.id);
+    if (!userSkillGet) {
+      dataUpdate.user_id = req.user.id;
+      await userController.createUserSkillByUserId(req.user.id, dataUpdate);
+    } else {
+      await userController.updateUserSkillByUserId(req.user.id, dataUpdate);
+    }
+    const userSkill = await userController.getUserSkillByUserId(req.user.id);
+    userSkill.skill = JSON.parse(userSkill.skill);
+    res.status(200).json(userSkill);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/save-post/:post_id", authentication, async (req, res) => {
+  try {
+    const post_id = req.params.post_id;
+    const user = await userController.getUserById(req.user.id);
+    const currentSave = (user.save_post && JSON.parse(user.save_post)) || [];
+    if (currentSave.includes(post_id)) {
+      const newPostSave = currentSave.filter((post) => post !== post_id);
+      user.save_post = JSON.stringify(newPostSave);
+      await userController.updateUser(user.id, user);
+    } else {
+      const newPostSave = [...currentSave, post_id];
+      user.save_post = JSON.stringify(newPostSave);
+      await userController.updateUser(user.id, user);
+    }
+    const _after = JSON.parse(user.save_post)
+    const saves = [];
+    for (let i = 0; i < _after.length; i++) {
+      const postId = Number(_after[i]);
+      const data = await CrawlDataService.getDataCrawlById(postId);
+      data.images =
+        data.images && data.images !== "None"
+          ? JSON.parse(
+              data.images.replaceAll("None", null).replaceAll("'", '"')
+            )
+          : null;
+      saves.push(data);
+    }
+
+    res.status(200).json(saves);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/save-post", authentication, async (req, res) => {
+  try {
+    const user = await userController.getUserById(req.user.id);
+    const currentSave = (user.save_post && JSON.parse(user.save_post)) || [];
+
+    const saves = [];
+    for (let i = 0; i < currentSave.length; i++) {
+      const postId = Number(currentSave[i]);
+      const data = await CrawlDataService.getDataCrawlById(postId);
+      data.images =
+        data.images && data.images !== "None"
+          ? JSON.parse(
+              data.images.replaceAll("None", null).replaceAll("'", '"')
+            )
+          : null;
+      saves.push(data);
+    }
+
+    res.status(200).json(saves);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Lấy thông tin người dùng theo ID
+router.get("/:id", async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const user = await userController.getUserById(userId);
+    if (user) {
+      user.avatar = JSON.parse(user.avatar);
+      res.json(user);
     } else {
       res.status(404).json({ error: "User not found" });
     }

@@ -40,6 +40,18 @@ const getUserById = (id) => {
   return db("users").where({ id }).first();
 };
 
+const getUserSkillByUserId = (user_id) => {
+  return db("user_skill").where({ user_id }).first();
+};
+
+const updateUserSkillByUserId = (user_id, data) => {
+  return db("user_skill").where({ user_id }).update(data);
+};
+
+const createUserSkillByUserId = (user_id, data) => {
+  return db("user_skill").insert(data);
+};
+
 // Tạo người dùng mới
 const createUser = (user) => {
   return db("users").insert(user);
@@ -54,6 +66,7 @@ const updateUser = (id, updatedUser) => {
 const deleteUser = (id) => {
   return db("users").where({ id }).del();
 };
+
 const getUserPolls = async (id) => {
   // get poll and option of it
   return await db("polls")
@@ -75,6 +88,7 @@ const getUserPolls = async (id) => {
       return Promise.all(polls);
     });
 };
+
 module.exports = {
   getUsers,
   getUserById,
@@ -84,4 +98,7 @@ module.exports = {
   getUserByEmail,
   getUserPolls,
   getCompanies,
+  updateUserSkillByUserId,
+  createUserSkillByUserId,
+  getUserSkillByUserId,
 };
