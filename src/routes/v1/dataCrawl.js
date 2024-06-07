@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
 const CrawlController = require("../../controllers/crawlController");
+const catchAsync = require("../../utils/catchAsync");
 // const bodyParser = require("body-parser");
 // router.use(bodyParser.json());
 
 router.get("/", CrawlController.getDataCrawls);
+
+router.get("/admin", CrawlController.getAllDataCrawls);
 
 router.get("/:id", CrawlController.getDataCrawlById);
 
@@ -58,5 +61,7 @@ router.get("/filterjob", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.put("/status/:id", CrawlController.updateStatusPost);
 
 module.exports = router;

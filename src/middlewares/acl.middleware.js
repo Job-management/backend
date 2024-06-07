@@ -6,9 +6,10 @@ aclInstance.allow([
 	{
 		roles: 'admin',
 		allows: [
-			{ resources: '/users', permissions: '*' },
-			{ resources: '/users/:id', permissions: '*' },
+			{ resources: '/user', permissions: '*' },
+			{ resources: '/user/:id', permissions: '*' },
 			{ resources: '/me', permissions: '*'},
+			{ resources: '/:id', permissions: '*'},
 			{ resources: '/', permissions: '*' },
 
 		],

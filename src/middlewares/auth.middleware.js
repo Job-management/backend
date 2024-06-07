@@ -25,7 +25,7 @@ const authorize = (req, res, next) => {
             if (result) {
               next();
             } else {
-              return res.status(401).json({ message: "Forbidden" });
+              return res.status(403).json({ message: "Forbidden" });
             }
           }
         }
