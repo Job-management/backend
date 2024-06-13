@@ -145,6 +145,7 @@ const getAllDataCrawls = catchAsync(async (req, res) => {
 const getDataCrawlById = catchAsync(async (req, res) => {
   const id = req.params.id;
   const data = await CrawlDataService.getDataCrawlById(id);
+  await CrawlDataService.increaseCountViewById(id);
   data.images =
     data.images && data.images !== "None"
       ? JSON.parse(data.images.replaceAll("None", null).replaceAll("'", '"'))

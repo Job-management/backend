@@ -13,5 +13,6 @@ router.post("/sendmail", AuthController.sendMail);
 router.get("/refresh", AuthController.refreshToken);
 router.post("/forgot-password", AuthController.forgotPassWord);
 router.post("/change-password", authentication, AuthController.resetPassword);
+router.post("/update-forgot-password", AuthController.updateForgotPassword);
 
 module.exports = router;

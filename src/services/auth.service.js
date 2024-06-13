@@ -2,6 +2,8 @@ const TokenService = require("./token.service");
 const UserController = require("../controllers/user.Controller");
 const mailService = require("./mailService");
 const dotenv = require("dotenv");
+const { resetPasswordEmailTemplate } = require("../utils/EmailTemplates");
+const { DEFAULT_AVATAR, SMTP_MAIL, APP_NAME } = require("../config");
 dotenv.config();
 const { generateUUID } = require("../utils/uuid");
 const loginUserWithEmailAndPassword = async (email, password) => {
@@ -36,7 +38,8 @@ const resetPassword = async (id, currentPassword, password) => {
       process.env.SALT
     );
 
-    if (user.password !== passwordHashed.password) return;
+    if (user.password !== passwordHashed.password)
+      throw new Error("Your current password not match, please try again!");
     const hashedNewPassword = TokenService.hashPasswordWithSalt(
       password,
       process.env.SALT
@@ -49,22 +52,23 @@ const resetPassword = async (id, currentPassword, password) => {
     throw new Error(error.message || "Internal server error");
   }
 };
-const forgotpassWord = async (email) => {
+const forgotPassWord = async (email) => {
   try {
     const user = await UserController.getUserByEmail(email);
     if (!user) {
       return null;
     }
-    const token = TokenService.forgotpasswordToken(user);
+    const token = TokenService.createForgotPasswordToken(user);
+    const forgotPasswordUrl = `${process.env.HOST_FE}/auth/forgot-password/${token}`;
     console.log(token);
     const mailOptions = {
-      emailFrom: "vanthanhhuynhtk@gmail.com",
-      emailTo: email,
-      subject: "Reset password",
-      text: `Click this link to reset your password: http://wandertour.ddns.net:5173/resetpassword?token=${token}`,
+      emailFrom: SMTP_MAIL,
+      emailTo: user.email,
+      subject: `Forgot password in ${APP_NAME} - Please confirm your forgot password`,
+      html: resetPasswordEmailTemplate(user.name, forgotPasswordUrl),
     };
     const mail = await mailService.sendEmail(mailOptions);
-    user.isverified = "true";
+    // user.isVerified = "true";
     const updatedUser = await UserController.updateUser(user.id, user);
     return mail, updatedUser;
   } catch (error) {
@@ -103,11 +107,30 @@ const deleteUser = async (id) => {
     throw new Error(error.message || "Internal server error");
   }
 };
+const updateForgotPassword = async (email, password) => {
+  try {
+    const user = await UserController.getUserByEmail(email);
+    if (!user) {
+      return null;
+    }
+    const hashedNewPassword = TokenService.hashPasswordWithSalt(
+      password,
+      process.env.SALT
+    );
+    user.password = hashedNewPassword.password;
+    user.isVerified = true;
+    const updatedUser = await UserController.updateUser(user.id, user);
+    return updatedUser;
+  } catch (error) {
+    throw new Error(error.message || "Internal server error");
+  }
+};
 module.exports = {
   loginUserWithEmailAndPassword,
   register,
   updateUserInfo,
   deleteUser,
-  forgotpassWord,
+  forgotPassWord,
   resetPassword,
+  updateForgotPassword,
 };

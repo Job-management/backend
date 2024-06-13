@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const config = require("../config")
+const config = require("../config");
 const crypto = require("crypto");
 function hashPasswordWithSalt(password, saltVal) {
   if (!saltVal) {
@@ -22,8 +22,9 @@ const createActivationToken = (user) => {
   });
 };
 const verifyActivationToken = (activation_token) => {
-  return jwt.verify(activation_token, config.ACTIVATION_SECRET)
+  return jwt.verify(activation_token, config.ACTIVATION_SECRET);
 };
+
 function signToken(user) {
   return jwt.sign(
     {
@@ -39,18 +40,17 @@ function signToken(user) {
     }
   );
 }
-function forgotpasswordToken(data) {
-  return jwt.sign(
-    {
-      email: data.email,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60,
-    },
-    config.SECRET,
-    {
-      algorithm: "HS256",
-    }
-  );
+function createForgotPasswordToken(user) {
+  const { id, email } = user;
+  return jwt.sign({ id, email }, config.ACTIVATION_SECRET, {
+    expiresIn: "10m", // set 10m
+  });
 }
+
+const verifyForgotPasswordToken = (forgot_password_token) => {
+  return jwt.verify(forgot_password_token, config.ACTIVATION_SECRET);
+};
+
 function refreshToken(data) {
   return jwt.sign(
     {
@@ -120,7 +120,8 @@ module.exports = {
   authorize,
   getInfoFromToken,
   hashPasswordWithSalt,
-  forgotpasswordToken,
+  createForgotPasswordToken,
+  verifyForgotPasswordToken,
   createActivationToken,
   verifyActivationToken,
 };
