@@ -192,9 +192,16 @@ const updateStatusPostById = async (id, status) => {
   return await db("crawl_data").where({ id }).update({ status: status });
 };
 
+const increaseCountViewById = async (id) => {
+  const record = await db("crawl_data").where({ id }).first();
+  const newViewCount = record?.view_count + 1;
+  await db("crawl_data").where({ id }).update({ view_count: newViewCount });
+};
+
 module.exports = {
   getDataCrawls,
   getDataCrawlById,
   updateStatusPostById,
   getAllDataCrawls,
+  increaseCountViewById,
 };

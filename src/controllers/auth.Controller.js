@@ -40,9 +40,15 @@ const login = catchAsync(async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { currentPassword, password } = req.body;
-    const user = await AuthServices.resetPassword(req.user.id, currentPassword, password);
+    const user = await AuthServices.resetPassword(
+      req.user.id,
+      currentPassword,
+      password
+    );
     if (!user) {
-      res.status(400).json({ message: "Change password failure, please check your current password" });
+      res.status(400).json({
+        message: "Change password failure, please check your current password",
+      });
       return;
     }
     res.status(200).json({ message: "Change password success" });
@@ -54,7 +60,7 @@ const resetPassword = async (req, res) => {
 const forgotPassWord = async (req, res) => {
   try {
     const { email } = req.body;
-    const user = await AuthServices.forgotpassWord(email);
+    const user = await AuthServices.forgotPassWord(email);
     if (!user) {
       res.status(400).json({ message: "Email not found" });
       return;
@@ -68,6 +74,27 @@ const forgotPassWord = async (req, res) => {
   }
 };
 
+const updateForgotPassword = async (req, res) => {
+  try {
+    const { password, token } = req.body;
+    const user_payload = TokenService.verifyForgotPasswordToken(token);
+
+    if (!user_payload) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Your token is invalid!");
+    }
+    const { email } = user_payload;
+    const user = await AuthServices.updateForgotPassword(email, password);
+    if (!user) {
+      res.status(400).json({ message: "Email not found" });
+      return;
+    }
+    res.status(200).json({ message: "Update password success" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: error.message || "Internal server error" });
+  }
+};
+
 const register = async (req, res) => {
   try {
     const newUser = await AuthServices.register({
@@ -75,6 +102,16 @@ const register = async (req, res) => {
       role: "user",
       avatar: req.body.avatar || DEFAULT_AVATAR,
     });
+    const activationToken = TokenService.createActivationToken(newUser);
+    const activationUrl = `${process.env.HOST}/api/v1/auth/activation/${activationToken}`;
+    const mailOptions = {
+      emailFrom: SMTP_MAIL,
+      emailTo: newUser.email,
+      subject: `Welcome to ${APP_NAME} - Please Verify Your Account`,
+      text: `Click here to verify your account: ${activationUrl}`,
+      html: verificationEmailTemplate(newUser.name, activationUrl),
+    };
+    await mailService.sendEmail(mailOptions);
     res.status(201).json({
       status: "Success",
       data: {
@@ -258,4 +295,5 @@ module.exports = {
   forgotPassWord,
   resetPassword,
   activeAccount,
+  updateForgotPassword,
 };
