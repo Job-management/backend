@@ -25,6 +25,18 @@ const verifyActivationToken = (activation_token) => {
   return jwt.verify(activation_token, config.ACTIVATION_SECRET);
 };
 
+// create mail registration token
+const createMailRegistrationToken = (mail) => {
+  const { email } = mail;
+  console.log(email);
+  return jwt.sign({ email }, config.ACTIVATION_SECRET, {
+    expiresIn: "10d",
+  });
+};
+const verifyMailRegistrationToken = (activation_token) => {
+  return jwt.verify(activation_token, config.ACTIVATION_SECRET);
+};
+
 function signToken(user) {
   return jwt.sign(
     {
@@ -122,6 +134,8 @@ module.exports = {
   hashPasswordWithSalt,
   createForgotPasswordToken,
   verifyForgotPasswordToken,
+  createMailRegistrationToken,
+  verifyMailRegistrationToken,
   createActivationToken,
   verifyActivationToken,
 };
