@@ -100,8 +100,12 @@ const register = async (req, res) => {
     const newUser = await AuthServices.register({
       ...req.body,
       role: "user",
-      avatar: req.body.avatar || DEFAULT_AVATAR,
+      avatar: {
+        public_id: "",
+        url: DEFAULT_AVATAR,
+      },
     });
+
     const activationToken = TokenService.createActivationToken(newUser);
     const activationUrl = `${process.env.HOST}/api/v1/auth/activation/${activationToken}`;
     const mailOptions = {
@@ -196,7 +200,7 @@ const updateUserInfo = async (req, res) => {
       data: {
         name: updatedUser.name,
         email: updatedUser.email,
-        age: updatedUser.age || DEFAULT_AVATAR,
+        age: updatedUser.age,
       },
     });
   } catch (error) {

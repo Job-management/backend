@@ -4,5 +4,6 @@ const mailScheduleController = require("../../controllers/mailSchedule.Controlle
 
 // create email schedule
 router.post("/", mailScheduleController.createMailSchedule);
+router.get("/activation/:token", mailScheduleController.verifyMailSchedule);
 router.get("/test", mailScheduleController.test)
 module.exports = router;

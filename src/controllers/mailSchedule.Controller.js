@@ -6,12 +6,14 @@ const mailScheduleService = require("../services/mailSchedule.service");
 const { testMailTemplate } = require("../utils/EmailTemplates");
 const { DEFAULT_AVATAR, SMTP_MAIL, APP_NAME } = require("../config");
 const mailService = require("../services/mailService");
+const TokenService = require("../services/token.service");
+const { verificationEmailSubscribeTemplate } = require("../utils/EmailTemplates");
 
 async function createMailSchedule(req, res) {
   try {
     // Check valid request
-    const mail = req.body.mail;
-    if (mail == null || mail == undefined) {
+    const mail = req.body.email;
+    if (!mail) {
       return res
         .status(httpStatus.BAD_REQUEST)
         .json({ error: "Validation failed!" });
@@ -24,7 +26,20 @@ async function createMailSchedule(req, res) {
         .json({ error: "Email already exists!" });
     }
     //create record
-    await mailScheduleService.createMailSchedule(mail);
+    const activationToken = TokenService.createMailRegistrationToken({
+      email: mail,
+    });
+    const activationUrl = `${process.env.HOST}/api/v1/mail-schedule/activation/${activationToken}`;
+    const mailOptions = {
+      emailFrom: SMTP_MAIL,
+      emailTo: mail,
+      subject: `Welcome to ${APP_NAME} - Please Verify Your Subscribe Email`,
+      text: `Click here to verify your account and receive new job posting everyday: ${activationUrl}`,
+      html: verificationEmailSubscribeTemplate(mail, activationUrl),
+    };
+
+    await mailScheduleService.createMailSchedule(mail, "PENDING");
+    await mailService.sendEmail(mailOptions);
     return res.status(201).json({ message: "mail schedule created" });
   } catch (err) {
     return res.status(500).json({ error: "Internal server error" });
@@ -32,12 +47,13 @@ async function createMailSchedule(req, res) {
 }
 
 async function test(req, res) {
+  const template = await mailScheduleService.createJobMailTemplate();
   const mailOptions = {
     emailFrom: SMTP_MAIL,
     emailTo: "vanthanhhuynhtk@gmail.com",
-    subject: `Welcome to Please Verify Your Account`,
+    subject: `Job posting news in the Career connect`,
     text: `Click here to verify your account`,
-    html: testMailTemplate,
+    html: template,
   };
   try {
     await mailService.sendEmail(mailOptions);
@@ -45,6 +61,7 @@ async function test(req, res) {
       status: "Success",
     });
   } catch (error) {
+    console.log(error);
     throw new ApiError(
       httpStatus.INTERNAL_SERVER_ERROR,
       "Internal server error"
@@ -52,7 +69,29 @@ async function test(req, res) {
   }
 }
 
+async function verifyMailSchedule(req, res) {
+  try {
+    const activation_token = req.params.token;
+    const mail_payload =
+      TokenService.verifyMailRegistrationToken(activation_token);
+      console.log(mail_payload);
+    const isVerified = await mailScheduleService.isVerified(mail_payload.email);
+    if (isVerified) {
+      return res
+        .status(httpStatus.BAD_REQUEST)
+        .json({ message: "Email has been verified before!" });
+    }
+    //create record
+    await mailScheduleService.verifyMailSchedule(mail_payload.email);
+    return res.status(201).json({ message: "Thank you for your subscribe" });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 module.exports = {
   createMailSchedule,
+  verifyMailSchedule,
   test,
 };
