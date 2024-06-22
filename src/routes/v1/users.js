@@ -3,7 +3,7 @@ const router = express.Router();
 const userController = require("../../controllers/user.Controller");
 const AuthMiddleware = require("../../middlewares/auth.middleware");
 const TokenService = require("../../services/token.service");
-const CrawlDataService = require("../../services/crawlData.service");
+const crawlDataService = require("../../services/crawlData.service");
 const { authentication } = require("../../middlewares/auth.middleware");
 
 // const bodyParser = require('body-parser')
@@ -151,7 +151,7 @@ router.post("/save-post/:post_id", authentication, async (req, res) => {
     const saves = [];
     for (let i = 0; i < _after.length; i++) {
       const postId = Number(_after[i]);
-      const data = await CrawlDataService.getDataCrawlById(postId);
+      const data = await crawlDataService.getDataCrawlById(postId);
       data.images =
         data.images && data.images !== "None"
           ? JSON.parse(
@@ -176,7 +176,7 @@ router.get("/save-post", authentication, async (req, res) => {
     const saves = [];
     for (let i = 0; i < currentSave.length; i++) {
       const postId = Number(currentSave[i]);
-      const data = await CrawlDataService.getDataCrawlById(postId);
+      const data = await crawlDataService.getDataCrawlById(postId);
       data.images =
         data.images && data.images !== "None"
           ? JSON.parse(
