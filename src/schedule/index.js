@@ -1,6 +1,7 @@
 const cron = require("node-cron");
 const mailService = require("../services/mailService");
 const mailScheduleService = require("../services/mailSchedule.service")
+const { SMTP_MAIL } = require("../config");
 
 const sendMail = async () => {
     try {
@@ -32,4 +33,4 @@ const cronJob = cron.schedule('0 7 * * *', () => {
     console.log('running a task every day');
 });
 
-module.exports = cronJob;
+module.exports = { cronJob, sendMail };
