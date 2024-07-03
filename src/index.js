@@ -10,7 +10,7 @@ const app = express();
 const cloudinary = require("cloudinary");
 const bodyParser = require("body-parser");
 const config = require("./config");
-const cronJob = require("./schedule")
+const { cronJob } = require("./schedule")
 
 app.use(bodyParser.json());
 // parse json request body
